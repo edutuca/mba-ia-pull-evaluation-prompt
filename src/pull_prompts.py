@@ -45,7 +45,21 @@ def pull_prompts_from_langsmith():
 
 def main():
     """Função principal"""
-    ...
+    client = Client()
+    prompt = client.pull_prompt(
+        "leonanluppi/bug_to_user_story_v1",
+        dangerously_pull_public_prompt=True,
+    )
+
+    texto_completo = ""
+    for mensagem in prompt.messages:
+        papel = type(mensagem).__name__.replace("MessagePromptTemplate", "").upper()
+        texto_completo += f"[{papel}]:\n{mensagem.prompt.template}\n\n"
+
+    with open("prompts/bug_to_user_story_v1.yml", "w", encoding="utf-8") as f:
+        f.write(texto_completo)
+
+    print(texto_completo)
 
 
 if __name__ == "__main__":

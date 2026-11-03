@@ -35,15 +35,14 @@ DICAS DE IMPLEMENTAÇÃO:
 
 - Use `load_yaml` de utils.py para ler o arquivo .yml.
 """
-
 import os
+import yaml
 import sys
 from dotenv import load_dotenv
 from langsmith import Client
 from langchain_core.prompts import ChatPromptTemplate
-from utils import load_yaml, check_env_vars, print_section_header
 
-load_dotenv()
+load_dotenv(dotenv_path='.env.example', override=True)
 
 
 def push_prompt_to_langsmith(prompt_name: str, prompt_data: dict) -> bool:
@@ -57,7 +56,6 @@ def push_prompt_to_langsmith(prompt_name: str, prompt_data: dict) -> bool:
     Returns:
         True se sucesso, False caso contrário
     """
-    ...
 
 
 def validate_prompt(prompt_data: dict) -> tuple[bool, list]:
@@ -70,13 +68,34 @@ def validate_prompt(prompt_data: dict) -> tuple[bool, list]:
     Returns:
         (is_valid, errors) - Tupla com status e lista de erros
     """
-    ...
+
 
 
 def main():
-    """Função principal"""
-    ...
+    with open("prompts/bug_to_user_story_v2.yml", "r", encoding="utf-8") as file:
+        data = yaml.safe_load(file)["bug_to_user_story_v2"]
 
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", data["system_prompt"]),
+        ("user", data["user_prompt"]),
+    ])
+
+    username = os.getenv("USERNAME_LANGSMITH_HUB")
+    print(f"Username: {username}")
+    if not username:
+        print("USERNAME_LANGSMITH_HUB não definido no .env")
+        return 1
+
+    cliente = Client()
+    url = cliente.push_prompt(
+        f"{username}/bug_to_user_story_v2",
+        object=prompt,
+        is_public=True,
+        description=data.get("description"),
+        tags=data.get("tags"),
+    )
+    print(f"Prompt enviado: {url}")
+    return 0
 
 if __name__ == "__main__":
     sys.exit(main())

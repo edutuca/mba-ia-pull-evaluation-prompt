@@ -27,7 +27,7 @@ from dotenv import load_dotenv
 from langchain_core.messages import SystemMessage, HumanMessage
 from utils import get_eval_llm
 
-load_dotenv()
+load_dotenv(dotenv_path='.env.example', override=True)
 
 
 def get_evaluator_llm():

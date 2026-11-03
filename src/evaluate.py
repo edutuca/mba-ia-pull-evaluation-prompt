@@ -28,7 +28,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from utils import check_env_vars, format_score, print_section_header, get_llm as get_configured_llm
 from metrics import evaluate_f1_score, evaluate_clarity, evaluate_precision
 
-load_dotenv()
+load_dotenv(dotenv_path='.env.example', override=True)
 
 # Nota mínima exigida em CADA métrica e também na média geral
 APPROVAL_THRESHOLD = 0.8
